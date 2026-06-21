@@ -85,14 +85,10 @@ def within_days(date_str, days):
 
 def get_announcements(code):
     """东方财富 - 公司公告（近 ANN_LOOKBACK 天）"""
+    # 逗号不能被 URL 编码，直接拼 URL
     r = safe_get(
-        "https://np-anotice-stock.eastmoney.com/api/security/ann",
-        params={
-            "sr": -1, "page": 1, "pageSize": 20,
-            "ann_type": "SHA,CYB,SZA",
-            "client_source": "web",
-            "stock_list": code,
-        },
+        f"https://np-anotice-stock.eastmoney.com/api/security/ann"
+        f"?sr=-1&page=1&pageSize=20&ann_type=SHA,CYB,SZA&client_source=web&stock_list={code}",
     )
     if not r:
         return []
@@ -318,7 +314,7 @@ def send_email(html_content):
     date_label = datetime.now(CST).strftime("%Y-%m-%d")
     msg = MIMEMultipart("alternative")
     msg["Subject"] = f"📈 股票日报 {date_label} | 新易盛·中际旭创·宝丰能源"
-    msg["From"]    = f"股票日报 <{sender}>"
+    msg["From"]    = sender
     msg["To"]      = receiver
     msg.attach(MIMEText(html_content, "html", "utf-8"))
 
